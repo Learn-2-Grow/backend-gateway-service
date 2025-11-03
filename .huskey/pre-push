@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname "$0")/_/husky.sh" || true
 
-echo "🔄 Running package version generator before push..."
+echo "🔄 Generating package informations..."
 npm run generate:packages
 
 if ! git diff --quiet package.md; then
