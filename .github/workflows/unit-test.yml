@@ -1,0 +1,77 @@
+# ---------------------------------------------------------
+# 🧪 GitHub Actions Workflow: Run Unit Tests for NestJS
+# ---------------------------------------------------------
+# This workflow automatically runs your Jest unit tests
+# whenever code is pushed or a pull request is opened
+# against `main` or `develop` branches.
+# ---------------------------------------------------------
+
+name: Run Unit Tests
+
+# 👇 Define when this workflow should run
+on:
+  push:                     # Run on every push
+    branches:
+      - main                # Target branch
+      - develop             # (Add more branches if needed)
+  pull_request:             # Also run for pull requests
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest  # Use the latest Ubuntu VM from GitHub Actions
+
+    steps:
+      # ---------------------------------------------
+      # 1️⃣ Checkout your repository code
+      # ---------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # This action clones your repo into the workflow runner
+
+      # ---------------------------------------------
+      # 2️⃣ Setup Node.js environment
+      # ---------------------------------------------
+      - name: Setup Node.js (with cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # 👈 Match your project’s Node version
+          cache: 'npm'        # Enables npm caching to speed up builds
+        # This step installs the Node.js runtime in the CI environment
+        # and automatically restores/saves npm cache based on lockfile hash.
+
+      # ---------------------------------------------
+      # 3️⃣ Install dependencies
+      # ---------------------------------------------
+      - name: Install dependencies
+        run: npm ci
+        # `npm ci` ensures a clean, reproducible install
+        # (faster and safer than `npm install` in CI)
+
+      # ---------------------------------------------
+      # 4️⃣ Run Jest unit tests
+      # ---------------------------------------------
+      - name: Run unit tests
+        run: |
+          # If a `test:ci` script exists, run it for deterministic CI behavior
+          if npm run | grep -q 'test:ci'; then
+            npm run test:ci
+          else
+            npm run test --if-present
+          fi
+        # Use `--if-present` so the command doesn’t fail if the script is missing
+
+      # ---------------------------------------------
+      # 5️⃣ Upload test coverage report (optional)
+      # ---------------------------------------------
+      - name: Upload coverage artifact (optional)
+        if: success() && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report        # Name of the uploaded artifact
+          path: coverage/              # Path to your Jest coverage output
+        # This uploads the coverage folder (if present) to GitHub
+        # so you can download and inspect it under the workflow run.
