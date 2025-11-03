@@ -21,7 +21,7 @@ interface NpmListOutput {
 
 const ROOT = process.cwd();
 const PACKAGE_JSON_PATH = path.join(ROOT, 'package.json');
-const OUTPUT_PATH = path.join(ROOT, 'package.md');
+const OUTPUT_PATH = path.join(ROOT, 'info/package.md');
 const MARKER_START = '<!--PACKAGE-TABLE-START-->';
 const MARKER_END = '<!--PACKAGE-TABLE-END-->';
 
