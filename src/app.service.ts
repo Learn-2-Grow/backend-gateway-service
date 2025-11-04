@@ -4,8 +4,8 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
   async health() {
     const health = {
-      message: "Server is running....!!!"
-    }
-    return health
+      message: 'Server is running....!!!',
+    };
+    return health;
   }
 }

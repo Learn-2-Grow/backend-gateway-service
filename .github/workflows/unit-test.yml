@@ -47,6 +47,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+
+      
+      # ---------------------------------------------
+      # 4️⃣ Run ESLint (Linting)
+      # ---------------------------------------------
+      - name: Run ESLint
+        run: |
+          if npm run | grep -q 'lint'; then
+            echo "🧹 Running ESLint..."
+            npm run lint
+          else
+            echo "⚠️ No lint script found in package.json, skipping lint step."
+          fi
+           
+
       # ---------------------------------------------
       # 4️⃣ Run Jest unit tests with coverage
       # ---------------------------------------------
