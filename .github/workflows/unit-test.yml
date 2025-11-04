@@ -67,9 +67,9 @@ jobs:
           # SONAR_TOKEN: ${{ 
             # secrets.SONAR_TOKEN }}
           SONAR_TOKEN: 966e43211b04ecb612bad550bf22a76145aabe15
-          SONAR_HOST_URL: https://sonarcloud.io
-        with:
-          projectBaseDir: .
+          # SONAR_HOST_URL: https://sonarcloud.io
+        # with:
+          # projectBaseDir: .
 
       # ---------------------------------------------
       # 6️⃣ (Optional) Upload coverage report
