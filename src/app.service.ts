@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
   async health() {
-    var newVal;
+    // var newVal;
 
     const health = {
       message: 'Server is running....!!!',
