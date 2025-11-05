@@ -1,5 +1,5 @@
 # ---------------------------------------------------------
-# 🧪 GitHub Actions Workflow: Lint + Test + SonarCloud
+# 🧪 GitHub Actions Workflow: Lint + Test + Coverage upload to the SonarCloud
 # ---------------------------------------------------------
 
 name: Lint, Test and SonarCloud Analysis
