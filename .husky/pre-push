@@ -11,17 +11,6 @@ if [ "$current_branch" = "main" ] || [ "$current_branch" = "master" ]; then
   exit 1
 fi
 
-echo "\n\n🔄 Generating package informations...!!"
-npm run generate:packages
-
-if ! git diff --quiet package.md; then
-  echo "📦 Detected changes in package.md, adding it to commit..."
-  git add package.md
-else
-  echo "✅ package.md is up to date.\n\n"
-fi
-
-
 # Generate package informations
 echo "\n\n🔄 Generating package informations...!!"
 npm run generate:packages
