@@ -1,6 +1,4 @@
 
-
-#!/bin/sh
 # Prevent direct push to main/master
 # Get the current branch name
 current_branch=$(git symbolic-ref --short HEAD)
