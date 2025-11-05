@@ -1,3 +1,28 @@
+
+
+#!/bin/sh
+# Prevent direct push to main/master
+# Get the current branch name
+current_branch=$(git symbolic-ref --short HEAD)
+
+if [ "$current_branch" = "main" ] || [ "$current_branch" = "master" ]; then
+  echo "❌ ERROR: Direct push to main is not allowed!"
+  echo "📋 Please create a feature branch and use Pull Request"
+  exit 1
+fi
+
+echo "\n\n🔄 Generating package informations...!!"
+npm run generate:packages
+
+if ! git diff --quiet package.md; then
+  echo "📦 Detected changes in package.md, adding it to commit..."
+  git add package.md
+else
+  echo "✅ package.md is up to date.\n\n"
+fi
+
+
+# Generate package informations
 echo "\n\n🔄 Generating package informations...!!"
 npm run generate:packages
 
