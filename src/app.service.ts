@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { IAppHealthResponse, IAppRootResponse } from './common/interface/app.interface';
 
 @Injectable()
 export class AppService {
@@ -8,13 +9,13 @@ export class AppService {
     this.startTime = Date.now();
   }
 
-  async root(): Promise<any> {
+  async root(): Promise<IAppRootResponse> {
     return {
       message: 'Backend Gateway Service is running',
     };
   }
 
-  async health(): Promise<any> {
+  async health(): Promise<IAppHealthResponse> {
     const uptime = Date.now() - this.startTime;
     const memoryUsage = process.memoryUsage();
 
