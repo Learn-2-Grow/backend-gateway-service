@@ -45,7 +45,7 @@ export class AppService {
         external: `${Math.round(memoryUsage.external / 1024 / 1024)} MB`,
       },
     };
-
+    console.log({ health });
     return health;
   }
 
