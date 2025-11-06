@@ -1,0 +1,70 @@
+# ---------------------------------------------------------
+# 🚀 GitHub Actions: Build and Push Docker Image to AWS ECR
+# ---------------------------------------------------------
+# 🧠 What this does:
+#   1. Runs automatically on every push to the `main` branch
+#   2. Logs in to AWS ECR using GitHub Secrets
+#   3. Builds your Docker image from the Dockerfile in the repo
+#   4. Tags it with both the commit SHA and `latest`
+#   5. Pushes both tags to your AWS ECR repository
+# ---------------------------------------------------------
+
+name: Build and Push Docker Image to AWS ECR
+
+on:
+  push:
+    branches:
+      - main    # 🔹 Trigger this workflow when code is pushed to main branch
+  workflow_dispatch: # 🔹 Allow manual trigger from the GitHub Actions tab
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest   # 🧰 Runs on Ubuntu VM provided by GitHub
+
+    steps:
+      # -------------------------------------------------
+      # 1️⃣ Checkout repository
+      # -------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # ✅ Downloads your project code so Docker can build it
+
+      # -------------------------------------------------
+      # 2️⃣ Configure AWS credentials (using GitHub Secrets)
+      # -------------------------------------------------
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}          # 🔐 Stored in GitHub Secrets
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # 🔐 Stored in GitHub Secrets
+          aws-region: ${{ secrets.AWS_REGION }}                        # e.g., us-east-1
+
+      # -------------------------------------------------
+      # 3️⃣ Login to AWS ECR
+      # -------------------------------------------------
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        # ✅ This logs Docker into your private ECR registry
+
+      # -------------------------------------------------
+      # 4️⃣ Build, Tag, and Push Docker Image
+      # -------------------------------------------------
+      - name: Build, Tag, and Push Docker image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} # Auto-detected from your AWS account
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}          # 🔐 Added in GitHub secrets (your repo URI)
+          IMAGE_TAG: ${{ github.sha }}                           # Unique image tag (commit hash)
+        run: |
+          echo "🛠️ Building Docker image..."
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+
+          echo "🏷️ Tagging Docker image with 'latest'..."
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REPOSITORY:latest
+
+          echo "🚀 Pushing both tags to AWS ECR..."
+          docker push $ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REPOSITORY:latest
+
+          echo "✅ Image successfully pushed to: $ECR_REPOSITORY"
+          echo "🔹 Tags pushed: $IMAGE_TAG and latest"
