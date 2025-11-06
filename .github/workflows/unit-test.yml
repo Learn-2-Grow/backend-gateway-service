@@ -5,13 +5,13 @@
 name: Lint, Test and SonarCloud Analysis
 
 on:
-  # push:
-  #   branches:
-  #     - main
-      # - develop
-  pull_request:
+  push:
     branches:
       - main
+      - dev
+  # pull_request:
+  #   branches:
+  #     - main
 
 jobs:
   lint-test-analyze:
