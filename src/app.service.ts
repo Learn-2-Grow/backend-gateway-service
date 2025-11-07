@@ -11,7 +11,7 @@ export class AppService {
 
   async root(): Promise<IAppRootResponse> {
     return {
-      message: 'Backend Gateway Service is ...!!',
+      message: 'Backend Gateway Service is running..!',
     };
   }
 
