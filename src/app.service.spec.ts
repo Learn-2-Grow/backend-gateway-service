@@ -31,7 +31,7 @@ describe('AppService', () => {
     it('should return the correct root message', async () => {
       const result = await service.root();
       expect(result).toEqual({
-        message: 'Backend Gateway Service is running',
+        message: 'Backend Gateway Service is running..!',
       });
     });
 

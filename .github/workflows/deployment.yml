@@ -68,3 +68,17 @@ jobs:
 
           echo "✅ Image successfully pushed to: $ECR_REPOSITORY"
           echo "🔹 Tags pushed: $IMAGE_TAG and latest"
+      
+      # ---------------------------------------------
+      # 🚀 Deploy to EC2 after pushing to ECR
+      # ---------------------------------------------
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            echo "Running deploy script(deploy.sh) on EC2..."
+            /home/ubuntu/deploy.sh
