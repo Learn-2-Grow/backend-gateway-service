@@ -14,15 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ---------------------------------------------
       # 1️⃣ Checkout repository
-      # ---------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ---------------------------------------------
       # 2️⃣ Set environment dynamically
-      # ---------------------------------------------
       - name: Set environment variables
         id: env
         run: |
@@ -34,9 +30,14 @@ jobs:
             echo "IMAGE_TAG=development" >> $GITHUB_ENV
           fi
 
-      # ---------------------------------------------
+      # 🧠 Show what we’re deploying
+      - name: Print Deployment Context
+        run: |
+          echo "📦 Environment: ${{ env.NODE_ENV }}"
+          echo "🏷️ Image Tag: ${{ env.IMAGE_TAG }}"
+          echo "📍 EC2 Host: ${{ secrets.EC2_HOST }}"
+
       # 3️⃣ Configure AWS credentials
-      # ---------------------------------------------
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -44,37 +45,39 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # ---------------------------------------------
-      # 4️⃣ Login to ECR
-      # ---------------------------------------------
+      # 4️⃣ Ensure ECR repository exists
+      - name: Ensure ECR repository exists
+        run: |
+          aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY }} --region ${{ secrets.AWS_REGION }} || \
+          aws ecr create-repository --repository-name ${{ secrets.ECR_REPOSITORY }} --region ${{ secrets.AWS_REGION }}
+
+      # 5️⃣ Login to ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # ---------------------------------------------
-      # 5️⃣ Build & Push Docker Image
-      # ---------------------------------------------
+      # 6️⃣ Build & Push Docker Image
       - name: Build & Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
-          echo "${{env.ECR_REGISTRY}} , ${{env.ECR_REPOSITORY}}"
+          echo "$ECR_REGISTRY , $ECR_REPOSITORY"
           echo "🛠️ Building Docker image for ${{ env.IMAGE_TAG }}..."
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} .
 
-          echo "🏷️ Tagging image as ${{ env.IMAGE_TAG }}..."
+          echo "🏷️ Tagging image as ${{ env.IMAGE_TAG }} and latest..."
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
           echo "🚀 Pushing image to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
           echo "✅ Successfully pushed: $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}"
 
-      # ---------------------------------------------
-      # 6️⃣ Copy deployment folder to EC2
-      # ---------------------------------------------
+      # 7️⃣ Copy deployment folder to EC2
       - name: Copy deployment folder to EC2
         uses: appleboy/scp-action@master
         with:
@@ -84,9 +87,7 @@ jobs:
           source: "deployment/*"
           target: "/home/ubuntu/deployment/"
 
-      # ---------------------------------------------
-      # 7️⃣ Execute deployment script on EC2
-      # ---------------------------------------------
+      # 8️⃣ Execute deployment script on EC2
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -97,6 +98,4 @@ jobs:
           script: |
             cd /home/ubuntu/deployment
             chmod +x deploy.sh
-            export NODE_ENV=${{ env.NODE_ENV }}
-            export IMAGE_TAG=${{ env.IMAGE_TAG }}
-            ./deploy.sh
+            NODE_ENV=${{ env.NODE_ENV }} IMAGE_TAG=${{ env.IMAGE_TAG }} ./deploy.sh
