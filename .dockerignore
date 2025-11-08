@@ -3,6 +3,7 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # Testing
 coverage
@@ -15,6 +16,10 @@ coverage
 *.swp
 *.swo
 *~
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
 # OS
 .DS_Store
@@ -32,15 +37,20 @@ docker-compose.yml
 
 # CI/CD
 .github
+.gitlab-ci.yml
+.circleci
 
 # Documentation
 README.md
 *.md
+docs/
 
 # Development files
 .env
 .env.*
 !.env.example
+.temp
+.tmp
 
 # Build artifacts (already copied from builder stage)
 dist
@@ -52,8 +62,23 @@ dist
 test
 *.spec.ts
 *.test.ts
+jest.config.js
 
 # Linter/Formatter
 .eslintrc.js
 .prettierrc
 eslint-report.json
+.editorconfig
+
+# Code quality
+sonar-project.properties
+
+# Scripts
+scripts/
+
+# Public assets (if not needed in container)
+public/
+
+# Info/Docs
+info/
+package.md
