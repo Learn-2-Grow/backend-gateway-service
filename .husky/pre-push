@@ -12,9 +12,9 @@ NC='\033[0m' # No Color
 
 # Print header
 echo ""
-echo "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
-echo "${CYAN}║${NC}              ${BOLD}🚀 Pre-Push Checks${NC}                           ${CYAN}║${NC}"
-echo "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
+echo "${CYAN}════════════════════════════════════════════════════════════════${NC}"
+echo "              ${BOLD}🚀 Pre-Push Checks${NC}"
+echo "${CYAN}════════════════════════════════════════════════════════════════${NC}"
 echo ""
 
 # Step 1: Lint Check
@@ -41,10 +41,10 @@ echo "${BOLD}[2/4] 🧪 Running Tests...${NC}"
 echo "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 if ! npm run test; then
   echo ""
-  echo "${RED}╔════════════════════════════════════════════════════════════════╗${NC}"
-  echo "${RED}║${NC}  ${BOLD}❌ ERROR: Tests Failed!${NC}                                  ${RED}║${NC}"
-  echo "${RED}║${NC}  📋 Please fix the failing tests before pushing.            ${RED}║${NC}"
-  echo "${RED}╚════════════════════════════════════════════════════════════════╝${NC}"
+  echo "${RED}════════════════════════════════════════════════════════════════${NC}"
+  echo "  ${BOLD}❌ ERROR: Tests Failed!${NC}"
+  echo "  📋 Please fix the failing tests before pushing."
+  echo "${RED}════════════════════════════════════════════════════════════════${NC}"
   echo ""
   exit 1
 fi
@@ -59,10 +59,10 @@ current_branch=$(git symbolic-ref --short HEAD)
 
 if [ "$current_branch" = "main" ] || [ "$current_branch" = "master" ]; then
   echo ""
-  echo "${RED}╔════════════════════════════════════════════════════════════════╗${NC}"
-  echo "${RED}║${NC}  ${BOLD}❌ ERROR: Direct push to main is not allowed!${NC}           ${RED}║${NC}"
-  echo "${RED}║${NC}  📋 Please create a feature branch and use Pull Request.    ${RED}║${NC}"
-  echo "${RED}╚════════════════════════════════════════════════════════════════╝${NC}"
+  echo "${RED}════════════════════════════════════════════════════════════════${NC}"
+  echo "  ${BOLD}❌ ERROR: Direct push to main is not allowed!${NC}"
+  echo "  📋 Please create a feature branch and use Pull Request."
+  echo "${RED}════════════════════════════════════════════════════════════════${NC}"
   echo ""
   exit 1
 fi
@@ -87,8 +87,8 @@ fi
 echo ""
 
 # Success message
-echo "${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
-echo "${GREEN}║${NC}              ${BOLD}✅ All Pre-Push Checks Passed!${NC}                 ${GREEN}║${NC}"
-echo "${GREEN}║${NC}              ${BOLD}🚀 Pushing to remote...${NC}                       ${GREEN}║${NC}"
-echo "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"
+echo "${GREEN}════════════════════════════════════════════════════════════════${NC}"
+echo "              ${BOLD}✅ All Pre-Push Checks Passed!${NC}"
+echo "              ${BOLD}🚀 Pushing to remote...${NC}"
+echo "${GREEN}════════════════════════════════════════════════════════════════${NC}"
 echo ""
