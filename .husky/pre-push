@@ -1,3 +1,11 @@
+# Run the lint command
+npm run lint
+
+# Run the test command
+npm run test
+
+
+
 
 # Prevent direct push to main/master
 # Get the current branch name
