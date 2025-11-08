@@ -6,5 +6,5 @@ export class CreateClientsDto {
 
   @IsOptional()
   @IsObject()
-  metadata?: Record<string, any> | null;
+  metadata?: Record<string, unknown> | null;
 }

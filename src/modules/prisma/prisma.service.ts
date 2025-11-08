@@ -20,8 +20,7 @@ import { PrismaClient } from '@prisma/client';
 @Injectable()
 export class PrismaService
   extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
-{
+  implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
@@ -35,10 +34,11 @@ export class PrismaService
 
     // Optional: Log all queries in development
     if (process.env.NODE_ENV === 'development') {
-      this.$on('query' as never, (e: any) => {
-        this.logger.debug(`Query: ${e.query}`);
-        this.logger.debug(`Params: ${e.params}`);
-        this.logger.debug(`Duration: ${e.duration}ms`);
+      this.$on('query' as never, (e: unknown) => {
+        const event = e as { query: string; params: string; duration: number };
+        this.logger.debug(`Query: ${event.query}`);
+        this.logger.debug(`Params: ${event.params}`);
+        this.logger.debug(`Duration: ${event.duration}ms`);
       });
     }
   }

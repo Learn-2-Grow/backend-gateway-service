@@ -17,7 +17,7 @@ import { UpdateClientsDto } from './dtos/update-clients.dto';
 export class ClientsRepository {
   private readonly logger = new Logger(ClientsRepository.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   // ==========================================
   // METHOD 1: Using Prisma Client (Recommended)
@@ -49,12 +49,12 @@ export class ClientsRepository {
    */
   async create(data: CreateClientsDto): Promise<IClient> {
     this.logger.log(`Creating client with Prisma Client: ${data.name}`);
-    const payload = {
-      name: data.name,
-      metadata: data.metadata,
-    };
-    const result = await this.prisma.clients.create({ data: payload });
-    return result;
+    return this.prisma.clients.create({
+      data: {
+        name: data.name,
+        metadata: data.metadata as never,
+      },
+    });
   }
 
   /**
@@ -68,7 +68,7 @@ export class ClientsRepository {
         where: { id },
         data: {
           ...(data.name && { name: data.name }),
-          ...(data.metadata !== undefined && { metadata: data.metadata }),
+          ...(data.metadata !== undefined && { metadata: data.metadata as never }),
         },
       });
     } catch (error) {
@@ -175,7 +175,7 @@ export class ClientsRepository {
 
     // Build dynamic SQL (be careful with SQL injection in production!)
     const updates: string[] = [];
-    const values: any[] = [];
+    const values: unknown[] = [];
 
     if (data.name !== undefined) {
       updates.push('name = $1');
@@ -252,7 +252,7 @@ export class ClientsRepository {
         this.prisma.clients.create({
           data: {
             name: client.name,
-            metadata: client.metadata,
+            metadata: client.metadata as never,
           },
         }),
       ),
