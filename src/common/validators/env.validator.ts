@@ -23,21 +23,9 @@ export class EnvironmentVariables {
   @Max(65535)
   PORT: number = 3000;
 
-  // Database
+  // Database - Prisma Connection String
   @IsString()
-  DATABASE_HOST: string = 'localhost';
-
-  @IsNumber()
-  DATABASE_PORT: number = 5432;
-
-  @IsString()
-  DATABASE_USER: string;
-
-  @IsString()
-  DATABASE_PASSWORD: string;
-
-  @IsString()
-  DATABASE_NAME: string;
+  DATABASE_URL: string;
 
   // // Redis
   // @IsString()

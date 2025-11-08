@@ -1,0 +1,23 @@
+// Prisma Schema - Learn2Grow Backend Gateway Service
+// Following PostgreSQL naming standards
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Clients table - Following PostgreSQL naming conventions
+model Clients {
+  id         String   @id @default(uuid()) @db.Uuid
+  name       String   @db.VarChar(255)
+  metadata   Json?    @db.JsonB
+  created_at DateTime @default(now()) @db.Timestamp()
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamp()
+
+  @@index([created_at], name: "clients_created_at_idx")
+  @@map("clients") // Maps to 'clients' table in PostgreSQL
+}

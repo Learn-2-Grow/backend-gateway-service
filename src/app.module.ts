@@ -3,15 +3,18 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { envValidator } from './common/validators/env.validator';
-import { DatabaseModule } from './modules/database/database.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
+import { ClientsModule } from './modules/clients/clients.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       validate: envValidator,
+      isGlobal: true,
     }),
 
-    DatabaseModule,
+    PrismaModule,
+    ClientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

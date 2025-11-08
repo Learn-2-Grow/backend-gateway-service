@@ -12,7 +12,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_HOST=postgres
+      # - DATABASE_HOST=postgres
     depends_on:
       postgres:
         condition: service_healthy
