@@ -5,12 +5,12 @@ import { ClientsService } from './clients.service';
 
 /**
  * ClientsModule - Feature module for clients management
- * 
+ *
  * Following NestJS module standards with plural naming
  */
 @Module({
   controllers: [ClientsController],
   providers: [ClientsService, ClientsRepository],
-  exports: [ClientsService]
+  exports: [ClientsService],
 })
-export class ClientsModule { }
+export class ClientsModule {}

@@ -10,124 +10,124 @@ import { UpdateClientsDto } from './dtos/update-clients.dto';
  */
 @Injectable()
 export class ClientsService {
-    private readonly logger = new Logger(ClientsService.name);
+  private readonly logger = new Logger(ClientsService.name);
 
-    constructor(private readonly clientsRepository: ClientsRepository) { }
+  constructor(private readonly clientsRepository: ClientsRepository) {}
 
-    /**
-     * Create a new client
-     */
-    async create(dto: CreateClientsDto): Promise<IClient> {
-        this.logger.log(`Creating new client: ${dto.name}`);
-        return this.clientsRepository.create(dto);
+  /**
+   * Create a new client
+   */
+  async create(dto: CreateClientsDto): Promise<IClient> {
+    this.logger.log(`Creating new client: ${dto.name}`);
+    return this.clientsRepository.create(dto);
+  }
+
+  /**
+   * Get all clients
+   */
+  async findAll(): Promise<IClient[]> {
+    this.logger.log('Fetching all clients');
+    return this.clientsRepository.findAll();
+  }
+
+  /**
+   * Get client by ID
+   * @throws NotFoundException if client doesn't exist
+   */
+  async findById(id: string): Promise<IClient> {
+    this.logger.log(`Fetching client with ID: ${id}`);
+    const client = await this.clientsRepository.findById(id);
+
+    if (!client) {
+      throw new NotFoundException(`Client with ID ${id} not found`);
     }
 
-    /**
-     * Get all clients
-     */
-    async findAll(): Promise<IClient[]> {
-        this.logger.log('Fetching all clients');
-        return this.clientsRepository.findAll();
+    return client;
+  }
+
+  /**
+   * Update client by ID
+   * @throws NotFoundException if client doesn't exist
+   */
+  async update(id: string, dto: UpdateClientsDto): Promise<IClient> {
+    this.logger.log(`Updating client with ID: ${id}`);
+
+    // Check if client exists first
+    await this.findById(id);
+
+    const updated = await this.clientsRepository.update(id, dto);
+
+    if (!updated) {
+      throw new NotFoundException(`Client with ID ${id} not found`);
     }
 
-    /**
-     * Get client by ID
-     * @throws NotFoundException if client doesn't exist
-     */
-    async findById(id: string): Promise<IClient> {
-        this.logger.log(`Fetching client with ID: ${id}`);
-        const client = await this.clientsRepository.findById(id);
+    return updated;
+  }
 
-        if (!client) {
-            throw new NotFoundException(`Client with ID ${id} not found`);
-        }
+  /**
+   * Delete client by ID
+   * @throws NotFoundException if client doesn't exist
+   */
+  async delete(id: string): Promise<void> {
+    this.logger.log(`Deleting client with ID: ${id}`);
 
-        return client;
+    // Check if client exists first
+    await this.findById(id);
+
+    const deleted = await this.clientsRepository.delete(id);
+
+    if (!deleted) {
+      throw new NotFoundException(`Client with ID ${id} not found`);
     }
 
-    /**
-     * Update client by ID
-     * @throws NotFoundException if client doesn't exist
-     */
-    async update(id: string, dto: UpdateClientsDto): Promise<IClient> {
-        this.logger.log(`Updating client with ID: ${id}`);
+    this.logger.log(`Client with ID ${id} deleted successfully`);
+  }
 
-        // Check if client exists first
-        await this.findById(id);
+  /**
+   * Get total count of clients
+   */
+  async getCount(): Promise<number> {
+    return this.clientsRepository.count();
+  }
 
-        const updated = await this.clientsRepository.update(id, dto);
+  /**
+   * Check if client exists
+   */
+  async exists(id: string): Promise<boolean> {
+    return this.clientsRepository.exists(id);
+  }
 
-        if (!updated) {
-            throw new NotFoundException(`Client with ID ${id} not found`);
-        }
+  // ==========================================
+  // RAW SQL Methods (For Learning)
+  // ==========================================
 
-        return updated;
+  /**
+   * Get all clients using RAW SQL
+   */
+  async findAllRaw(): Promise<IClient[]> {
+    this.logger.log('Fetching all clients with RAW SQL');
+    return this.clientsRepository.findAllRaw();
+  }
+
+  /**
+   * Get client by ID using RAW SQL
+   */
+  async findByIdRaw(id: string): Promise<IClient> {
+    this.logger.log(`Fetching client with ID: ${id} using RAW SQL`);
+    const client = await this.clientsRepository.findByIdRaw(id);
+
+    if (!client) {
+      throw new NotFoundException(`Client with ID ${id} not found`);
     }
 
-    /**
-     * Delete client by ID
-     * @throws NotFoundException if client doesn't exist
-     */
-    async delete(id: string): Promise<void> {
-        this.logger.log(`Deleting client with ID: ${id}`);
+    return client;
+  }
 
-        // Check if client exists first
-        await this.findById(id);
-
-        const deleted = await this.clientsRepository.delete(id);
-
-        if (!deleted) {
-            throw new NotFoundException(`Client with ID ${id} not found`);
-        }
-
-        this.logger.log(`Client with ID ${id} deleted successfully`);
-    }
-
-    /**
-     * Get total count of clients
-     */
-    async getCount(): Promise<number> {
-        return this.clientsRepository.count();
-    }
-
-    /**
-     * Check if client exists
-     */
-    async exists(id: string): Promise<boolean> {
-        return this.clientsRepository.exists(id);
-    }
-
-    // ==========================================
-    // RAW SQL Methods (For Learning)
-    // ==========================================
-
-    /**
-     * Get all clients using RAW SQL
-     */
-    async findAllRaw(): Promise<IClient[]> {
-        this.logger.log('Fetching all clients with RAW SQL');
-        return this.clientsRepository.findAllRaw();
-    }
-
-    /**
-     * Get client by ID using RAW SQL
-     */
-    async findByIdRaw(id: string): Promise<IClient> {
-        this.logger.log(`Fetching client with ID: ${id} using RAW SQL`);
-        const client = await this.clientsRepository.findByIdRaw(id);
-
-        if (!client) {
-            throw new NotFoundException(`Client with ID ${id} not found`);
-        }
-
-        return client;
-    }
-
-    /**
-     * Create client using RAW SQL
-     */
-    async createRaw(dto: CreateClientsDto): Promise<IClient> {
-        this.logger.log(`Creating new client with RAW SQL: ${dto.name}`);
-        return this.clientsRepository.createRaw(dto);
-    }
+  /**
+   * Create client using RAW SQL
+   */
+  async createRaw(dto: CreateClientsDto): Promise<IClient> {
+    this.logger.log(`Creating new client with RAW SQL: ${dto.name}`);
+    return this.clientsRepository.createRaw(dto);
+  }
 }
