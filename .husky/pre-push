@@ -1,10 +1,26 @@
-# Run the lint command
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running lint..."
 npm run lint
 
-# Run the test command
-npm run test
+# Check if lint made any changes
+if ! git diff --quiet; then
+  echo "🔧 Lint made changes, auto-committing..."
+  git add .
+  git commit -m "chore: auto-fix lint issues" --no-verify
+  echo "✅ Lint changes committed automatically"
+else
+  echo "✅ No lint changes needed"
+fi
 
-
+echo "\n🧪 Running tests..."
+if ! npm run test; then
+  echo "\n❌ ERROR: Tests failed! Push aborted."
+  echo "📋 Please fix the failing tests before pushing."
+  exit 1
+fi
+echo "✅ All tests passed\n"
 
 
 # Prevent direct push to main/master

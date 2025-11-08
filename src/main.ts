@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-
 function logStartup(port: number, startupStartTime: bigint): void {
   const startupEndTime = process.hrtime.bigint();
   const totalStartupTime = Number(startupEndTime - startupStartTime) / 1000000;
@@ -55,14 +54,15 @@ function logStartup(port: number, startupStartTime: bigint): void {
 }
 
 async function bootstrap() {
-
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   const configService = app.get(ConfigService);
   const port = configService.get('PORT') || 4000;
