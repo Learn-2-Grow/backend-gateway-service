@@ -2,7 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import {
     IsEnum,
     IsNumber,
-    IsUrl,
+    IsString,
     Max,
     Min,
     validateSync
@@ -24,23 +24,20 @@ export class EnvironmentVariables {
     PORT: number = 3000;
 
     // Database
-    @IsUrl({ require_tld: false })
-    DATABASE_URL: string;
+    @IsString()
+    DATABASE_HOST: string = 'localhost';
 
-    // @IsString()
-    // DATABASE_HOST: string = 'localhost';
+    @IsNumber()
+    DATABASE_PORT: number = 5432;
 
-    // @IsNumber()
-    // DATABASE_PORT: number = 5432;
+    @IsString()
+    DATABASE_USER: string;
 
-    // @IsString()
-    // DATABASE_USER: string;
+    @IsString()
+    DATABASE_PASSWORD: string;
 
-    // @IsString()
-    // DATABASE_PASSWORD: string;
-
-    // @IsString()
-    // DATABASE_NAME: string;
+    @IsString()
+    DATABASE_NAME: string;
 
     // // Redis
     // @IsString()
