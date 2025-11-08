@@ -16,6 +16,7 @@ npm run generate:packages
 if ! git diff --quiet package.md; then
   echo "📦 Detected changes in package.md, adding it to commit..."
   git add package.md
+  git commit -m "update package.md file"
 else
   echo "✅ package.md is up to date.\n\n"
 fi
