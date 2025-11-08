@@ -17,7 +17,7 @@ import { UpdateClientsDto } from './dtos/update-clients.dto';
 export class ClientsRepository {
   private readonly logger = new Logger(ClientsRepository.name);
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   // ==========================================
   // METHOD 1: Using Prisma Client (Recommended)
@@ -68,7 +68,9 @@ export class ClientsRepository {
         where: { id },
         data: {
           ...(data.name && { name: data.name }),
-          ...(data.metadata !== undefined && { metadata: data.metadata as never }),
+          ...(data.metadata !== undefined && {
+            metadata: data.metadata as never,
+          }),
         },
       });
     } catch (error) {
