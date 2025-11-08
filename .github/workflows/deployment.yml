@@ -85,7 +85,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "deployment/*"
-          target: "/home/ubuntu/deployment/"
+          target: "/home/ubuntu/"
 
       # 8️⃣ Execute deployment script on EC2
       - name: Deploy on EC2
