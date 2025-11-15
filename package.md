@@ -16,13 +16,13 @@ Node: v20.17.0  •  npm: 10.8.2
 | `@nestjs/schematics` | `10.2.3` | `^10.0.0` |
 | `@nestjs/testing` | `10.4.20` | `^10.0.0` |
 | `@prisma/client` | `6.19.0` | `^6.19.0` |
-| `@types/express` | `4.17.23` | `^4.17.17` |
+| `@types/express` | `4.17.25` | `^4.17.17` |
 | `@types/jest` | `29.5.14` | `^29.5.2` |
-| `@types/node` | `20.19.20` | `^20.3.1` |
+| `@types/node` | `20.19.25` | `^20.3.1` |
 | `@types/pg` | `8.15.6` | `^8.15.6` |
 | `@types/supertest` | `6.0.3` | `^6.0.0` |
-| `@typescript-eslint/eslint-plugin` | `8.46.0` | `^8.0.0` |
-| `@typescript-eslint/parser` | `8.46.0` | `^8.0.0` |
+| `@typescript-eslint/eslint-plugin` | `8.46.4` | `^8.0.0` |
+| `@typescript-eslint/parser` | `8.46.4` | `^8.0.0` |
 | `class-transformer` | `0.5.1` | `^0.5.1` |
 | `class-validator` | `0.14.2` | `^0.14.2` |
 | `eslint` | `8.57.1` | `^8.42.0` |
