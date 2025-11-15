@@ -31,16 +31,16 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 
-# Copy Prisma schema and generated client
+# Copy Prisma schema
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Install only production dependencies and clean everything
 # Remove all cache, tmp files, and unnecessary alpine packages
 RUN npm ci --omit=dev --ignore-scripts && \
+    npx prisma generate && \
     npm cache clean --force && \
     rm -rf /root/.npm /tmp/* /var/cache/apk/* /usr/share/man
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/src/main"]
