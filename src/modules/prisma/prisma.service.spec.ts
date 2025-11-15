@@ -10,207 +10,207 @@ import { PrismaService } from './prisma.service';
  * 3. All database operations are simulated with Jest mocks
  */
 describe('PrismaService - Unit Tests (Safe, No DB Connection)', () => {
-    let service: PrismaService;
-    let mockConnect: jest.SpyInstance;
-    let mockDisconnect: jest.SpyInstance;
-    let mockQueryRaw: jest.SpyInstance;
-    let loggerLogSpy: jest.SpyInstance;
-    let loggerErrorSpy: jest.SpyInstance;
-    let loggerDebugSpy: jest.SpyInstance;
+  let service: PrismaService;
+  let mockConnect: jest.SpyInstance;
+  let mockDisconnect: jest.SpyInstance;
+  let mockQueryRaw: jest.SpyInstance;
+  let loggerLogSpy: jest.SpyInstance;
+  let loggerErrorSpy: jest.SpyInstance;
+  let loggerDebugSpy: jest.SpyInstance;
 
-    beforeEach(async () => {
-        // Create a fresh instance for each test
-        const module: TestingModule = await Test.createTestingModule({
-            providers: [PrismaService],
-        }).compile();
+  beforeEach(async () => {
+    // Create a fresh instance for each test
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [PrismaService],
+    }).compile();
 
-        service = module.get<PrismaService>(PrismaService);
+    service = module.get<PrismaService>(PrismaService);
 
-        // Mock PrismaClient methods - This prevents real DB connections
-        mockConnect = jest.spyOn(service, '$connect').mockResolvedValue(undefined);
-        mockDisconnect = jest
-            .spyOn(service, '$disconnect')
-            .mockResolvedValue(undefined);
-        mockQueryRaw = jest.spyOn(service, '$queryRaw').mockResolvedValue([]);
+    // Mock PrismaClient methods - This prevents real DB connections
+    mockConnect = jest.spyOn(service, '$connect').mockResolvedValue(undefined);
+    mockDisconnect = jest
+      .spyOn(service, '$disconnect')
+      .mockResolvedValue(undefined);
+    mockQueryRaw = jest.spyOn(service, '$queryRaw').mockResolvedValue([]);
 
-        // Mock logger methods to avoid console noise in tests
-        loggerLogSpy = jest.spyOn(service['logger'], 'log').mockImplementation();
-        loggerErrorSpy = jest
-            .spyOn(service['logger'], 'error')
-            .mockImplementation();
-        loggerDebugSpy = jest
-            .spyOn(service['logger'], 'debug')
-            .mockImplementation();
+    // Mock logger methods to avoid console noise in tests
+    loggerLogSpy = jest.spyOn(service['logger'], 'log').mockImplementation();
+    loggerErrorSpy = jest
+      .spyOn(service['logger'], 'error')
+      .mockImplementation();
+    loggerDebugSpy = jest
+      .spyOn(service['logger'], 'debug')
+      .mockImplementation();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('Service Creation', () => {
+    it('should be defined', () => {
+      expect(service).toBeDefined();
     });
 
-    afterEach(() => {
-        jest.clearAllMocks();
+    it('should be an instance of PrismaService', () => {
+      expect(service).toBeDefined();
+      expect(typeof service.$connect).toBe('function');
+      expect(typeof service.$disconnect).toBe('function');
     });
 
-    describe('Service Creation', () => {
-        it('should be defined', () => {
-            expect(service).toBeDefined();
-        });
+    it('should have a logger', () => {
+      expect(service['logger']).toBeDefined();
+    });
+  });
 
-        it('should be an instance of PrismaService', () => {
-            expect(service).toBeDefined();
-            expect(typeof service.$connect).toBe('function');
-            expect(typeof service.$disconnect).toBe('function');
-        });
+  describe('onModuleInit - Database Connection', () => {
+    it('should connect to database successfully', async () => {
+      await service.onModuleInit();
 
-        it('should have a logger', () => {
-            expect(service['logger']).toBeDefined();
-        });
+      expect(mockConnect).toHaveBeenCalledTimes(1);
+      expect(loggerLogSpy).toHaveBeenCalledWith(
+        '✅ Database connection established successfully',
+      );
     });
 
-    describe('onModuleInit - Database Connection', () => {
-        it('should connect to database successfully', async () => {
-            await service.onModuleInit();
+    it('should log error and throw if connection fails', async () => {
+      const connectionError = new Error('Connection failed');
+      mockConnect.mockRejectedValueOnce(connectionError);
 
-            expect(mockConnect).toHaveBeenCalledTimes(1);
-            expect(loggerLogSpy).toHaveBeenCalledWith(
-                '✅ Database connection established successfully',
-            );
-        });
+      await expect(service.onModuleInit()).rejects.toThrow('Connection failed');
 
-        it('should log error and throw if connection fails', async () => {
-            const connectionError = new Error('Connection failed');
-            mockConnect.mockRejectedValueOnce(connectionError);
-
-            await expect(service.onModuleInit()).rejects.toThrow('Connection failed');
-
-            expect(mockConnect).toHaveBeenCalledTimes(1);
-            expect(loggerErrorSpy).toHaveBeenCalledWith(
-                '❌ Database connection failed',
-                'Connection failed',
-            );
-        });
-
-        it('should handle network timeout errors', async () => {
-            const timeoutError = new Error('Connection timeout');
-            mockConnect.mockRejectedValueOnce(timeoutError);
-
-            await expect(service.onModuleInit()).rejects.toThrow(
-                'Connection timeout',
-            );
-
-            expect(loggerErrorSpy).toHaveBeenCalledWith(
-                '❌ Database connection failed',
-                'Connection timeout',
-            );
-        });
+      expect(mockConnect).toHaveBeenCalledTimes(1);
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        '❌ Database connection failed',
+        'Connection failed',
+      );
     });
 
-    describe('onModuleDestroy - Database Disconnection', () => {
-        it('should disconnect from database', async () => {
-            await service.onModuleDestroy();
+    it('should handle network timeout errors', async () => {
+      const timeoutError = new Error('Connection timeout');
+      mockConnect.mockRejectedValueOnce(timeoutError);
 
-            expect(mockDisconnect).toHaveBeenCalledTimes(1);
-            expect(loggerLogSpy).toHaveBeenCalledWith('Database connection closed');
-        });
+      await expect(service.onModuleInit()).rejects.toThrow(
+        'Connection timeout',
+      );
 
-        it('should disconnect even if called multiple times', async () => {
-            await service.onModuleDestroy();
-            await service.onModuleDestroy();
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        '❌ Database connection failed',
+        'Connection timeout',
+      );
+    });
+  });
 
-            expect(mockDisconnect).toHaveBeenCalledTimes(2);
-        });
+  describe('onModuleDestroy - Database Disconnection', () => {
+    it('should disconnect from database', async () => {
+      await service.onModuleDestroy();
+
+      expect(mockDisconnect).toHaveBeenCalledTimes(1);
+      expect(loggerLogSpy).toHaveBeenCalledWith('Database connection closed');
     });
 
-    describe('isHealthy - Health Check', () => {
-        it('should return true when database is healthy', async () => {
-            mockQueryRaw.mockResolvedValueOnce([{ '?column?': 1 }]);
+    it('should disconnect even if called multiple times', async () => {
+      await service.onModuleDestroy();
+      await service.onModuleDestroy();
 
-            const result = await service.isHealthy();
+      expect(mockDisconnect).toHaveBeenCalledTimes(2);
+    });
+  });
 
-            expect(result).toBe(true);
-            expect(mockQueryRaw).toHaveBeenCalledTimes(1);
-        });
+  describe('isHealthy - Health Check', () => {
+    it('should return true when database is healthy', async () => {
+      mockQueryRaw.mockResolvedValueOnce([{ '?column?': 1 }]);
 
-        it('should return false when database query fails', async () => {
-            mockQueryRaw.mockRejectedValueOnce(new Error('Query failed'));
+      const result = await service.isHealthy();
 
-            const result = await service.isHealthy();
-
-            expect(result).toBe(false);
-            expect(mockQueryRaw).toHaveBeenCalledTimes(1);
-        });
-
-        it('should return false when database is not connected', async () => {
-            mockQueryRaw.mockRejectedValueOnce(
-                new Error('Client not connected to database'),
-            );
-
-            const result = await service.isHealthy();
-
-            expect(result).toBe(false);
-        });
-
-        it('should handle timeout during health check', async () => {
-            mockQueryRaw.mockRejectedValueOnce(new Error('Query timeout'));
-
-            const result = await service.isHealthy();
-
-            expect(result).toBe(false);
-        });
+      expect(result).toBe(true);
+      expect(mockQueryRaw).toHaveBeenCalledTimes(1);
     });
 
-    describe('Query Logging in Development', () => {
-        it('should log queries when NODE_ENV is development', () => {
-            const originalEnv = process.env.NODE_ENV;
-            process.env.NODE_ENV = 'development';
+    it('should return false when database query fails', async () => {
+      mockQueryRaw.mockRejectedValueOnce(new Error('Query failed'));
 
-            // Create new instance to trigger constructor
-            const devService = new PrismaService();
-            const mockOn = jest
-                .spyOn(devService, '$on')
-                .mockImplementation(() => devService);
+      const result = await service.isHealthy();
 
-            // Re-create service to trigger event listener setup
-            new PrismaService();
-
-            // Cleanup
-            process.env.NODE_ENV = originalEnv;
-            mockOn.mockRestore();
-        });
+      expect(result).toBe(false);
+      expect(mockQueryRaw).toHaveBeenCalledTimes(1);
     });
 
-    describe('Error Scenarios', () => {
-        it('should handle invalid database credentials error', async () => {
-            const authError = new Error('Invalid database credentials');
-            mockConnect.mockRejectedValueOnce(authError);
+    it('should return false when database is not connected', async () => {
+      mockQueryRaw.mockRejectedValueOnce(
+        new Error('Client not connected to database'),
+      );
 
-            await expect(service.onModuleInit()).rejects.toThrow(
-                'Invalid database credentials',
-            );
-        });
+      const result = await service.isHealthy();
 
-        it('should handle database not found error', async () => {
-            const dbNotFoundError = new Error('Database does not exist');
-            mockConnect.mockRejectedValueOnce(dbNotFoundError);
-
-            await expect(service.onModuleInit()).rejects.toThrow(
-                'Database does not exist',
-            );
-        });
+      expect(result).toBe(false);
     });
 
-    describe('Lifecycle Integration', () => {
-        it('should handle full lifecycle: init -> use -> destroy', async () => {
-            // Initialize
-            await service.onModuleInit();
-            expect(mockConnect).toHaveBeenCalledTimes(1);
+    it('should handle timeout during health check', async () => {
+      mockQueryRaw.mockRejectedValueOnce(new Error('Query timeout'));
 
-            // Use (health check)
-            mockQueryRaw.mockResolvedValueOnce([{ '?column?': 1 }]);
-            const healthy = await service.isHealthy();
-            expect(healthy).toBe(true);
+      const result = await service.isHealthy();
 
-            // Destroy
-            await service.onModuleDestroy();
-            expect(mockDisconnect).toHaveBeenCalledTimes(1);
-        });
+      expect(result).toBe(false);
     });
+  });
+
+  describe('Query Logging in Development', () => {
+    it('should log queries when NODE_ENV is development', () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      // Create new instance to trigger constructor
+      const devService = new PrismaService();
+      const mockOn = jest
+        .spyOn(devService, '$on')
+        .mockImplementation(() => devService);
+
+      // Re-create service to trigger event listener setup
+      new PrismaService();
+
+      // Cleanup
+      process.env.NODE_ENV = originalEnv;
+      mockOn.mockRestore();
+    });
+  });
+
+  describe('Error Scenarios', () => {
+    it('should handle invalid database credentials error', async () => {
+      const authError = new Error('Invalid database credentials');
+      mockConnect.mockRejectedValueOnce(authError);
+
+      await expect(service.onModuleInit()).rejects.toThrow(
+        'Invalid database credentials',
+      );
+    });
+
+    it('should handle database not found error', async () => {
+      const dbNotFoundError = new Error('Database does not exist');
+      mockConnect.mockRejectedValueOnce(dbNotFoundError);
+
+      await expect(service.onModuleInit()).rejects.toThrow(
+        'Database does not exist',
+      );
+    });
+  });
+
+  describe('Lifecycle Integration', () => {
+    it('should handle full lifecycle: init -> use -> destroy', async () => {
+      // Initialize
+      await service.onModuleInit();
+      expect(mockConnect).toHaveBeenCalledTimes(1);
+
+      // Use (health check)
+      mockQueryRaw.mockResolvedValueOnce([{ '?column?': 1 }]);
+      const healthy = await service.isHealthy();
+      expect(healthy).toBe(true);
+
+      // Destroy
+      await service.onModuleDestroy();
+      expect(mockDisconnect).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 /**
