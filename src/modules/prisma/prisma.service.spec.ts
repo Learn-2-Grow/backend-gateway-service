@@ -37,7 +37,6 @@ describe('PrismaService - Unit Tests (Safe, No DB Connection)', () => {
     loggerErrorSpy = jest
       .spyOn(service['logger'], 'error')
       .mockImplementation();
-
   });
 
   afterEach(() => {
