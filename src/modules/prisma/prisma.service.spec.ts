@@ -16,7 +16,7 @@ describe('PrismaService - Unit Tests (Safe, No DB Connection)', () => {
   let mockQueryRaw: jest.SpyInstance;
   let loggerLogSpy: jest.SpyInstance;
   let loggerErrorSpy: jest.SpyInstance;
-  let loggerDebugSpy: jest.SpyInstance;
+  // let loggerDebugSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     // Create a fresh instance for each test
