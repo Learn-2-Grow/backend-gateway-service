@@ -1,4 +1,7 @@
-import { IAppHealthResponse, IAppRootResponse } from '@interfaces/app.interface';
+import {
+  IAppHealthResponse,
+  IAppRootResponse,
+} from '@interfaces/app.interface';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
