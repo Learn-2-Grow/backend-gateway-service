@@ -10,6 +10,14 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@common/*": ["src/common/*"],
+      "@interfaces/*": ["src/common/interfaces/*"],
+      "@enums/*": ["src/common/enums/*"],
+      "@validators/*": ["src/common/validators/*"],
+      "@utils/*": ["src/common/utils/*"],
+      "@config/*": ["src/common/config/*"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

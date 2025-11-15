@@ -73,12 +73,11 @@ eslint-report.json
 # Code quality
 sonar-project.properties
 
-# Scripts
-scripts/
+# Scripts (keeping for potential runtime use)
+# scripts/
 
-# Public assets (if not needed in container)
-public/
+# Public assets (keeping for static file serving)
+# public/
 
 # Info/Docs
 info/
-package.md

@@ -7,11 +7,14 @@ COPY package*.json ./
 
 # Install all dependencies (including dev deps for building)
 # Clean cache immediately to reduce layer size
-RUN npm ci --ignore-scripts --only=development && \
+RUN npm ci --ignore-scripts && \
     npm cache clean --force && \
     rm -rf /root/.npm
 
 COPY . .
+
+# Generate Prisma Client
+RUN npx prisma generate
 
 # Build the NestJS application
 RUN npm run build
@@ -28,14 +31,15 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 
+# Copy Prisma schema
+COPY --from=builder /app/prisma ./prisma
+
 # Install only production dependencies and clean everything
 # Remove all cache, tmp files, and unnecessary alpine packages
 RUN npm ci --omit=dev --ignore-scripts && \
+    npx prisma generate && \
     npm cache clean --force && \
     rm -rf /root/.npm /tmp/* /var/cache/apk/* /usr/share/man
-
-# Use non-root user for security
-USER node
 
 EXPOSE 3000
 
