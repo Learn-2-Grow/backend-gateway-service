@@ -7,7 +7,7 @@ import {
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) { }
+  constructor(private readonly appService: AppService) {}
 
   @Get('')
   async root(): Promise<IAppRootResponse> {
