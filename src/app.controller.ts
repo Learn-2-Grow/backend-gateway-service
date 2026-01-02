@@ -7,7 +7,7 @@ import {
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
 
   @Get('')
   async root(): Promise<IAppRootResponse> {
@@ -16,6 +16,7 @@ export class AppController {
 
   @Get('health')
   async health(): Promise<IAppHealthResponse> {
+    // return health status
     return await this.appService.health();
   }
 }
