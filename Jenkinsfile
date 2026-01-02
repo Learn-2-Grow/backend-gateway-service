@@ -17,31 +17,39 @@ pipeline {
         stage('Verify Branch (PROD SAFETY)') {
             steps {
                 script {
-                    def branch = sh(
-                        script: "git rev-parse --abbrev-ref HEAD",
-                        returnStdout: true
-                    ).trim()
+                    echo "Branch detected by Jenkins: ${env.BRANCH_NAME}"
 
-                    if (branch != 'main') {
-                        error("❌ Deployment allowed only from main branch (current: ${branch})")
+                    if (env.BRANCH_NAME != 'main') {
+                        echo "🟡 Non-PROD branch detected (${env.BRANCH_NAME}). Skipping deploy."
+                        currentBuild.result = 'SUCCESS'
+                        return
                     }
                 }
             }
         }
 
         stage('Install Dependencies') {
+            when {
+                branch 'main'
+            }
             steps {
                 sh 'npm ci'
             }
         }
 
         stage('Run Tests') {
+            when {
+                branch 'main'
+            }
             steps {
                 sh 'npm test'
             }
         }
 
         stage('Docker Login') {
+            when {
+                branch 'main'
+            }
             steps {
                 withCredentials([
                     usernamePassword(
@@ -60,6 +68,9 @@ pipeline {
         }
 
         stage('Build & Push Docker Image') {
+            when {
+                branch 'main'
+            }
             steps {
                 script {
                     def commitHash = sh(
@@ -83,6 +94,9 @@ pipeline {
         }
 
         stage('Approval: Deploy to PROD') {
+            when {
+                branch 'main'
+            }
             steps {
                 input message: "Approve PROD deployment?",
                       ok: "Deploy Now"
@@ -90,6 +104,9 @@ pipeline {
         }
 
         stage('Deploy to Render') {
+            when {
+                branch 'main'
+            }
             steps {
                 withCredentials([
                     string(
@@ -97,23 +114,20 @@ pipeline {
                         variable: 'RENDER_HOOK'
                     )
                 ]) {
-                    sh '''
-                        curl -X POST "$RENDER_HOOK"
-                    '''
+                    sh 'curl -X POST "$RENDER_HOOK"'
                 }
             }
         }
 
         stage('Health Check') {
+            when {
+                branch 'main'
+            }
             steps {
-                script {
-                    echo "Waiting for service to boot..."
-                    sleep 40
+                echo "Waiting for service to boot..."
+                sleep 40
 
-                    sh '''
-                        curl -f https://backend-gateway-service-d9ht.onrender.com/health
-                    '''
-                }
+                sh 'curl -f https://backend-gateway-service-d9ht.onrender.com/health'
             }
         }
     }
