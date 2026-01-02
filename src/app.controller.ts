@@ -16,6 +16,7 @@ export class AppController {
 
   @Get('health')
   async health(): Promise<IAppHealthResponse> {
+    // return health status
     return await this.appService.health();
   }
 }
