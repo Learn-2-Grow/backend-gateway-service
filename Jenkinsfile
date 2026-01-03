@@ -1,12 +1,17 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+        timestamps()
+    }
+
     environment {
         APP_NAME    = "backend-gateway-service"
         DOCKER_REPO = "aman060/backend-gateway-service"
         HEALTH_URL  = "https://backend-gateway-service-d9ht.onrender.com/health"
-        MAX_WAIT    = 480   // 8 minutes
-        INTERVAL    = 20
+        MAX_WAIT    = "480"   // seconds (8 minutes) — MUST be string
+        INTERVAL    = "20"    // seconds — MUST be string
     }
 
     stages {
@@ -22,6 +27,7 @@ pipeline {
             steps {
                 script {
                     echo "🌿 Branch detected: ${env.BRANCH_NAME}"
+
                     if (env.BRANCH_NAME != 'main') {
                         echo "🟡 Not main branch → skipping deployment"
                         currentBuild.result = 'SUCCESS'
@@ -97,9 +103,13 @@ pipeline {
             steps {
                 script {
                     echo "⏳ Waiting for Render service to become healthy..."
-                    int waited = 0
 
-                    while (waited < MAX_WAIT) {
+                    int maxWait  = env.MAX_WAIT.toInteger()
+                    int interval = env.INTERVAL.toInteger()
+                    int waited   = 0
+
+                    while (waited < maxWait) {
+
                         def status = sh(
                             script: """
                                 curl -s -o /dev/null -w "%{http_code}" ${HEALTH_URL} || true
@@ -112,12 +122,12 @@ pipeline {
                             return
                         }
 
-                        waited += INTERVAL
-                        echo "⏳ Still starting... ${waited}/${MAX_WAIT}s | HTTP=${status}"
-                        sleep INTERVAL
+                        waited += interval
+                        echo "⏳ Still starting... ${waited}/${maxWait}s | HTTP=${status}"
+                        sleep interval
                     }
 
-                    error "❌ Service did not become healthy in time"
+                    error "❌ Service did not become healthy in time (${maxWait}s)"
                 }
             }
         }
