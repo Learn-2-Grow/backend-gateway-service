@@ -9,7 +9,7 @@ pipeline {
     environment {
         APP_NAME    = "backend-gateway-service"
         DOCKER_REPO = "aman060/backend-gateway-service"
-        HEALTH_URL  = "https://backend-gateway-service-d9ht.onrender.com/health"
+        HEALTH_URL  = "https://backend-gateway-service-d9nf.onrender.com/health"
         MAX_WAIT    = "480"   // seconds (8 minutes) — MUST be string
         INTERVAL    = "20"    // seconds — MUST be string
     }
