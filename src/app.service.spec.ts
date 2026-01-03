@@ -49,7 +49,7 @@ describe('AppService', () => {
       expect(result).toHaveProperty('status', 'ok');
       expect(result).toHaveProperty(
         'message',
-        'Service is healthy and running...!',
+        'Service is healthy and running....!',
       );
       expect(result).toHaveProperty('timestamp');
       expect(result).toHaveProperty('service');

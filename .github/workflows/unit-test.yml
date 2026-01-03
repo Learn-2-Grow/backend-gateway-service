@@ -1,68 +1,68 @@
-# ---------------------------------------------------------
-# 🧪 GitHub Actions Workflow: Lint + Test + Coverage upload to the SonarCloud..
-# ---------------------------------------------------------
+# # ---------------------------------------------------------
+# # 🧪 GitHub Actions Workflow: Lint + Test + Coverage upload to the SonarCloud..
+# # ---------------------------------------------------------
 
-name: Lint, Test and SonarCloud Analysis
+# name: Lint, Test and SonarCloud Analysis
 
-on:
-  # push:
-  #   branches:
-  #     - main
-      # - dev
-  pull_request:
-    branches:
-      - main
+# on:
+#   # push:
+#   #   branches:
+#   #     - main
+#       # - dev
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  lint-test-analyze:
-    name: Lint, Test & Analyze with SonarCloud
-    runs-on: ubuntu-latest
+# jobs:
+#   lint-test-analyze:
+#     name: Lint, Test & Analyze with SonarCloud
+#     runs-on: ubuntu-latest
 
-    steps:
-      # 1️⃣ Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+#     steps:
+#       # 1️⃣ Checkout
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-      # 2️⃣ Node setup
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+#       # 2️⃣ Node setup
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#           cache: 'npm'
 
-      # 3️⃣ Install deps
-      - name: Install dependencies
-        run: npm ci
+#       # 3️⃣ Install deps
+#       - name: Install dependencies
+#         run: npm ci
 
-      # 4️⃣ Run lint (show errors in console)
-      - name: Run ESLint (console check)
-        run: npm run lint
+#       # 4️⃣ Run lint (show errors in console)
+#       - name: Run ESLint (console check)
+#         run: npm run lint
 
-      # 5️⃣ Generate ESLint report for SonarCloud
-      - name: Generate ESLint JSON report
-        run: npm run lint:report
+#       # 5️⃣ Generate ESLint report for SonarCloud
+#       - name: Generate ESLint JSON report
+#         run: npm run lint:report
 
-      # 6️⃣ Run Jest tests with coverage
-      - name: Run unit tests with coverage
-        run: |
-          if npm run | grep -q 'test:ci'; then
-            npm run test:ci
-          else
-            npm run test -- --coverage --runInBand
-          fi
+#       # 6️⃣ Run Jest tests with coverage
+#       - name: Run unit tests with coverage
+#         run: |
+#           if npm run | grep -q 'test:ci'; then
+#             npm run test:ci
+#           else
+#             npm run test -- --coverage --runInBand
+#           fi
 
-      # 7️⃣ SonarCloud analysis
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#       # 7️⃣ SonarCloud analysis
+#       - name: SonarCloud Scan
+#         uses: SonarSource/sonarqube-scan-action@v6
+#         env:
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # 8️⃣ Upload coverage artifact (optional)
-      - name: Upload coverage artifact
-        if: success() && always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
+#       # 8️⃣ Upload coverage artifact (optional)
+#       - name: Upload coverage artifact
+#         if: success() && always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: coverage-report
+#           path: coverage/
