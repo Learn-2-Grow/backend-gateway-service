@@ -238,9 +238,12 @@ pipeline {
         }
 
         always {
+            echo "🧼 Cleaning up Docker environment..."
+            sh 'docker system prune -af'
+
+            // Always log out from Docker Hub`|| true` prevents failure if already logged out
+            echo "🔐 Logging out from Docker Hub..."
             sh 'docker logout || true'
-            // Always log out from Docker Hub
-            // `|| true` prevents failure if already logged out
         }
     }
 }
