@@ -21,7 +21,7 @@ pipeline {
         DOCKER_REPO = "aman060/backend-gateway-service"
         // Docker Hub repository name
 
-        HEALTH_URL  = "https://backend-gateway-service-d9nf.onrender.com/health"
+        HEALTH_URL  = "https://backend-gateway-service-utcw.onrender.com/health"
         // Public health-check endpoint used after deployment
 
         MAX_WAIT    = "480"
