@@ -24,7 +24,7 @@ export class AppService {
 
     const health = {
       status: 'ok',
-      message: 'Service is healthy and running',
+      message: 'Service is healthy and running...!',
       timestamp: new Date().toISOString(),
       service: {
         name: 'backend-gateway-service',
